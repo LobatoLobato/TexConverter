@@ -1,0 +1,7 @@
+.idea/*
+!.idea/vcs.xml
+!.idea/cmake.xml
+!.idea/modules.xml
+!.idea/TexConverter.iml
+
+build/

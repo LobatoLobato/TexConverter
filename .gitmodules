@@ -1,0 +1,6 @@
+[submodule "BinaryTools"]
+	path = vendor/BinaryTools
+	url = https://github.com/LobatoLobato/BinaryTools
+[submodule "libsquish"]
+	path = vendor/libsquish
+	url = https://github.com/oblivioncth/libsquish
