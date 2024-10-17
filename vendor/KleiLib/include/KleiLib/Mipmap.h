@@ -18,10 +18,9 @@ namespace KleiLib
     using Filter = Image::InterpolationMode;
 
     enum class PixelFormat : uint8_t {
-      ARGB = 0,
-      DXT1 = (1 << 0),
-      DXT3 = (1 << 1),
-      DXT5 = (1 << 2),
+      DXT1 = 0, DXT3 = 1, DXT5 = 2,
+      ARGB = 4,
+      Unknown [[maybe_unused]] = 7
     };
 
     struct InvalidPixelFormatException: std::exception {
