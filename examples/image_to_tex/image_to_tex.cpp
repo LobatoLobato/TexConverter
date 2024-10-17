@@ -15,7 +15,6 @@ int main() {
   bool generateMipmaps = false;
   bool preMultiplyAlpha = false;
 
-  {
     std::cout << "Converting " << inputImagePath << "...\n";
     TexConverter::convertImageToTex(
       inputImagePath,
@@ -28,5 +27,4 @@ int main() {
     );
     std::cout << "Converted " << inputImagePath << ".\n"
               << "Saved to " << outputTexPath << ".\n";
-  }
 }

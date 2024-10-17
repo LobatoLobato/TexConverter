@@ -5,25 +5,27 @@
 #ifndef TEXCONVERTER_CONVERTER_HPP
 #define TEXCONVERTER_CONVERTER_HPP
 
-#include <string>
-#include <cstdint>
-#include <vector>
+#include "Image/Image.hpp"
 #include <KleiLib/TexFile.h>
-#include "TexConverter/Image.hpp"
+#include <cstdint>
+#include <string>
+#include <vector>
 
 
 namespace TexConverter
 {
-  using PixelFormat = KleiLib::TexFile::PixelFormat;
+  using PixelFormat = KleiLib::Mipmap::PixelFormat;
   using TextureType = KleiLib::TexFile::TextureType;
-  using MipmapFilter = TexConverter::InterpolationMode;
+  using MipmapFilter = Image::InterpolationMode;
 
   void convertImageToTex(
-    const std::string& inputFile, const std::string& outputFile,
-    PixelFormat pixelFormat = PixelFormat::DXT5,
-    MipmapFilter interpolationMode = MipmapFilter::Default,
-    TextureType textureType = TextureType::OneD,
+    const std::string& inputFile, const std::string& outputFile, PixelFormat pixelFormat = PixelFormat::DXT5,
+    MipmapFilter interpolationMode = MipmapFilter::Default, TextureType textureType = TextureType::OneD,
     bool generateMipmaps = false, bool preMultiplyAlpha = false
   );
-}
-#endif // TEXCONVERTER_CONVERTER_HPP
+
+  void convertTexToImage(const std::string& inputFile, const std::string& outputFile);
+
+}// namespace TexConverter
+
+#endif// TEXCONVERTER_CONVERTER_HPP

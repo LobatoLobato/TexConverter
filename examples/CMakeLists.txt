@@ -1,1 +1,2 @@
 add_subdirectory(image_to_tex)
+add_subdirectory(tex_to_image)
