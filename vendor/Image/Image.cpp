@@ -122,6 +122,14 @@ namespace Image
       stbi_write_bmp(filename.c_str(), _width, _height, _channels, _data);
     } else if (ext == "jpg") {
       stbi_write_jpg(filename.c_str(), _width, _height, _channels, _data, 90);
+    } else if (ext == "tga") {
+      stbi_write_tga(filename.c_str(), _width, _height, _channels, _data);
+    } else if (ext == "hdr") {
+      auto temp = new float[_data_len];
+      float max = std::pow(2, sizeof(ChannelT) * 8) - 1;
+      std::transform(_data, _data + _data_len, temp, [&max](ChannelT channel) { return channel / max; });
+      stbi_write_hdr(filename.c_str(), _width, _height, _channels, temp);
+      delete[] temp;
     } else {
       if (ext != "png") {
         printf("Image format '%s' not supported, writing default png\n", ext.c_str());
