@@ -27,40 +27,59 @@ Based on [Klei Studio](https://github.com/handsomematt/dont-starve-tools)
 
 # Examples
 
-### `Image to tex conversion`
-```c++
-#include <iostream>
-#include <string>
-#include <TexConverter/Converter.hpp>
+>- ### [Image to tex conversion](examples/image_to_tex/image_to_tex.cpp)
+>```c++
+>#include <iostream>
+>#include <string>
+>#include <TexConverter/Converter.hpp>
+>
+>int main() {
+>  // Input can be any image type supported by stb_image
+>  std::string inputImagePath = "wurt.png";
+>  std::string outputTexPath = "wurt.tex";
+>  auto pixelFormat = TexConverter::PixelFormat::DXT5;
+>  auto interpolationMode = TexConverter::MipmapFilter::Default;
+>  auto textureType = TexConverter::TextureType::OneD;
+>  bool generateMipmaps = false;
+>  bool preMultiplyAlpha = false;
+>
+>  std::cout << "Converting " << inputImagePath << "...\n";
+>  TexConverter::convertImageToTex(
+>    inputImagePath,
+>    outputTexPath,
+>    pixelFormat,
+>    interpolationMode,
+>    textureType,
+>    generateMipmaps,
+>    preMultiplyAlpha
+>  );
+>  std::cout << "Converted " << inputImagePath << ".\n"
+>            << "Saved to " << outputTexPath << ".\n";
+>}
+>```
 
-int main() {
-  // Input can be any image type supported by stb_image
-  std::string inputImagePath = "wurt.png";
-  std::string outputTexPath = "wurt.tex";
-  auto pixelFormat = TexConverter::PixelFormat::DXT5;
-  auto interpolationMode = TexConverter::MipmapFilter::Default;
-  auto textureType = TexConverter::TextureType::OneD;
-  bool generateMipmaps = false;
-  bool preMultiplyAlpha = false;
 
-  {
-    std::cout << "Converting " << inputImagePath << "...\n";
-    TexConverter::convertImageToTex(
-      inputImagePath,
-      outputTexPath,
-      pixelFormat,
-      interpolationMode,
-      textureType,
-      generateMipmaps,
-      preMultiplyAlpha
-    );
-    std::cout << "Converted " << inputImagePath << ".\n"
-              << "Saved to " << outputTexPath << ".\n";
-  }
-}
-```
+>### [Tex to image conversion](examples/tex_to_image/tex_to_image.cpp)
+>```c++
+>#include <TexConverter/Converter.hpp>
+>#include <iostream>
+>#include <string>
+>
+>int main() {
+>  // Output can be any image type supported by stb_image
+>  std::string inputImagePath = "wurt.tex";
+>  std::string outputTexPath = "wurt.png";
+>
+>  std::cout << "Converting " << inputImagePath << "...\n";
+>  
+>  TexConverter::convertTexToImage(inputImagePath, outputTexPath);
+>
+>  std::cout << "Converted " << inputImagePath << ".\n"
+>            << "Saved to " << outputTexPath << ".\n";
+>}
+>```
+
 # Todo
-  - Tex to image conversion
   - Implement Gdiplus-like HighQualityBilinear and HighQualityBicubic image interpolators
 
 # Contributing
