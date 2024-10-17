@@ -60,7 +60,43 @@ namespace Image
   }
 
   template<typename ChannelT>
-  Image<ChannelT>::~Image() { stbi_image_free(_data); };
+  Image<ChannelT>::~Image() {
+    stbi_image_free(_data);
+  }
+
+  template<typename ChannelT>
+  [[maybe_unused]] Image<ChannelT> Image<ChannelT>::toRGBA(bool white_to_transparent, float tolerance) const {
+    Image<ChannelT> rgba_image(_width, _height, 4);
+
+    for (int destidx = 0, srcidx = 0; destidx < rgba_image._data_len; destidx += 4, srcidx += _channels) {
+      if (_channels == 3) {
+        auto threshold = ChannelT(-1) - tolerance * ChannelT(-1);
+        bool is_white_pixel = _data[srcidx] >= threshold && _data[srcidx + 1] >= threshold && _data[srcidx + 2] >= threshold;
+
+        for (int ch = 0; ch < 3; ch++) { rgba_image._data[destidx + ch] = _data[srcidx + ch]; }
+        rgba_image._data[destidx + 3] = white_to_transparent && is_white_pixel ? 0 : threshold;
+      } else {
+        for (int ch = 0; ch < 4; ch++) { rgba_image._data[destidx + ch] = _data[srcidx + ch]; }
+      }
+    }
+
+    return rgba_image;
+  }
+
+  template<typename ChannelT>
+  Image<ChannelT> Image<ChannelT>::toRGB() const {
+    Image<ChannelT> rgb_image(_width, _height, 3);
+
+    for (int destidx = 0, srcidx = 0;
+         destidx < rgb_image._data_len; destidx += rgb_image._channels, srcidx += _channels) {
+      for (int ch = 0; ch < rgb_image._channels; ch++) {
+        if (_channels == 4 && _data[srcidx + 3] == 0) { rgb_image._data[destidx + ch] = -1; }
+        else { rgb_image._data[destidx + ch] = _data[srcidx + ch]; }
+      }
+    }
+
+    return rgb_image;
+  }
 
   template<typename ChannelT>
   Image<ChannelT>& Image<ChannelT>::flip(FlipType type) {
@@ -121,13 +157,17 @@ namespace Image
     if (ext == "bmp") {
       stbi_write_bmp(filename.c_str(), _width, _height, _channels, _data);
     } else if (ext == "jpg") {
-      stbi_write_jpg(filename.c_str(), _width, _height, _channels, _data, 90);
+      if (_channels == 4) {
+        auto temp = this->toRGB();
+        stbi_write_jpg(filename.c_str(), _width, _height, temp._channels, temp._data, 90);
+      } else {
+        stbi_write_jpg(filename.c_str(), _width, _height, _channels, _data, 90);
+      }
     } else if (ext == "tga") {
       stbi_write_tga(filename.c_str(), _width, _height, _channels, _data);
     } else if (ext == "hdr") {
       auto temp = new float[_data_len];
-      float max = std::pow(2, sizeof(ChannelT) * 8) - 1;
-      std::transform(_data, _data + _data_len, temp, [&max](ChannelT channel) { return channel / max; });
+      std::transform(_data, _data + _data_len, temp, [](ChannelT channel) { return channel / float(ChannelT(-1)); });
       stbi_write_hdr(filename.c_str(), _width, _height, _channels, temp);
       delete[] temp;
     } else {

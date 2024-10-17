@@ -37,6 +37,8 @@ namespace Image
             for (int chidx = 0; chidx < n_channels; chidx++) { channels[chidx] = pixeldata[chidx]; }
           }
 
+          PixelV4(ChannelT r, ChannelT g, ChannelT b, ChannelT a) : channels({r, g, b, a}) { }
+
           ChannelT& operator[](int index) { return channels[index]; };
 
           const ChannelT& operator[](int index) const { return channels[index]; };
@@ -57,6 +59,8 @@ namespace Image
 
       ~Image();
 
+      Image toRGB() const;
+      [[maybe_unused]] Image toRGBA(bool white_to_transparent = false, float tolerance = 0) const;
 
       Image& flip(FlipType type);
 
@@ -71,6 +75,8 @@ namespace Image
       [[maybe_unused]] [[nodiscard]] int channels() const { return _channels; }
 
       [[nodiscard]] PixelV4 pixelAt(int x, int y) const;
+
+      void setPixel(int x, int y, const PixelV4& pixel) const;
 
 
   private:
@@ -87,8 +93,6 @@ namespace Image
 
       [[nodiscard]] size_t coordsToIndex(int x, int y) const;
 
-      void setPixel(int x, int y, const PixelV4& pixel) const;
-
   private:
       ChannelT* _data;
       size_t _data_len;
@@ -97,6 +101,7 @@ namespace Image
 
       bool _is_rgba;
   };
+
 
   using Image8 [[maybe_unused]] = Image<uint8_t>;
   using Image16 [[maybe_unused]] = Image<uint16_t>;
