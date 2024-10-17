@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <string>
 #include <cmath>
+#include <exception>
+#include <algorithm>
 #include <stb/stb_image.h>
 #include <stb/stb_image_write.h>
 #include "private/gaussian_blur.hpp"
@@ -35,6 +37,8 @@ namespace TexConverter
     } else {
       _data = stbi_load(path.c_str(), &_width, &_height, &_channels, 0);
     }
+
+    if (_data == nullptr) { throw std::exception(stbi_failure_reason()); }
 
     _data_len = _width * _height * _channels;
     _is_rgba = _channels == 4;
@@ -177,7 +181,6 @@ namespace TexConverter
 
   template<typename ChannelT>
   Image<ChannelT>::PixelV4 Image<ChannelT>::sampleBicubic(const Image& image, double x, double y) {
-    // calculate coordinates -> also need to offset by half a pixel to keep image from shifting down and left half a pixel
     int xint = std::floor(x + 0.5), yint = std::floor(y + 0.5);
     double xfract = (x + 0.5) - xint, yfract = (y + 0.5) - yint;
 
