@@ -1,7 +1,7 @@
 //
 // Created by Lobato on 16/10/2024.
 //
-#include "TexConverter/Image.hpp"
+#include "Image/Image.hpp"
 
 #include <cstdint>
 #include <string>
@@ -24,7 +24,7 @@ double CubicHermite(double A, double B, double C, double D, double t) {
   return a * t * t * t + b * t * t + c * t + d;
 }
 
-namespace TexConverter
+namespace Image
 {
   template class Image<uint8_t>;
 
@@ -118,11 +118,11 @@ namespace TexConverter
   void Image<ChannelT>::write(std::string filename) {
     std::string ext = filename.substr(filename.size() - 3);
 
-    if (ext == "bmp")
+    if (ext == "bmp") {
       stbi_write_bmp(filename.c_str(), _width, _height, _channels, _data);
-    else if (ext == "jpg")
+    } else if (ext == "jpg") {
       stbi_write_jpg(filename.c_str(), _width, _height, _channels, _data, 90);
-    else {
+    } else {
       if (ext != "png") {
         printf("Image format '%s' not supported, writing default png\n", ext.c_str());
         filename = filename.substr(0, filename.size() - 4) + std::string(".png");

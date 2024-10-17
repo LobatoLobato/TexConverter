@@ -9,7 +9,7 @@
 #include <array>
 #include <string>
 
-namespace TexConverter
+namespace Image
 {
   enum class FlipType {
       Horizontal, Vertical
@@ -71,6 +71,7 @@ namespace TexConverter
       [[maybe_unused]] [[nodiscard]] int channels() const { return _channels; }
 
       [[nodiscard]] PixelV4 pixelAt(int x, int y) const;
+
 
   private:
 
