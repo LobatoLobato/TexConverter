@@ -4,7 +4,7 @@ AccessModifierOffset: -2
 AlignAfterOpenBracket: BlockIndent
 AlignConsecutiveAssignments: None
 AlignOperands: Align
-AllowAllArgumentsOnNextLine: true
+AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: Always
@@ -46,6 +46,7 @@ MaxEmptyLinesToKeep: 2
 NamespaceIndentation: All
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: false
+PackConstructorInitializers: BinPack
 PointerAlignment: Left
 ReflowComments: false
 RemoveSemicolon: true
