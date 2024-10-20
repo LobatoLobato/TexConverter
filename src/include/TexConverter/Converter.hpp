@@ -19,6 +19,12 @@ namespace TexConverter
   using MipmapFilter = Image::InterpolationMode;
 
   void convertImageToTex(
+    Image::Image8 image, const std::string& outputFile, PixelFormat pixelFormat = PixelFormat::DXT5,
+    MipmapFilter interpolationMode = MipmapFilter::Default, TextureType textureType = TextureType::OneD,
+    bool generateMipmaps = false, bool preMultiplyAlpha = false
+  );
+
+  void convertImageToTex(
     const std::string& inputFile, const std::string& outputFile, PixelFormat pixelFormat = PixelFormat::DXT5,
     MipmapFilter interpolationMode = MipmapFilter::Default, TextureType textureType = TextureType::OneD,
     bool generateMipmaps = false, bool preMultiplyAlpha = false

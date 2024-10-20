@@ -8,7 +8,7 @@ namespace TexConverter
   using Mipmap = KleiLib::Mipmap;
 
   void convertImageToTex(
-    const std::string& inputFile,
+    Image::Image8 image,
     const std::string& outputFile,
     PixelFormat pixelFormat,
     MipmapFilter interpolationMode,
@@ -16,20 +16,19 @@ namespace TexConverter
     bool generateMipmaps,
     bool preMultiplyAlpha
   ) {
-    Image::Image8 inputImage(inputFile);
-    inputImage.flip(Image::FlipType::Vertical);
+    image.flip(Image::FlipType::Vertical);
 
-    std::vector<Mipmap> mipmaps = {{inputImage, pixelFormat, preMultiplyAlpha}};
+    std::vector<Mipmap> mipmaps = {{image, pixelFormat, preMultiplyAlpha}};
 
     if (generateMipmaps) {
-      auto width = inputImage.width();
-      auto height = inputImage.height();
+      auto width = image.width();
+      auto height = image.height();
 
       while (std::max(width, height) > 1) {
         width = std::max(1, width >> 1);
         height = std::max(1, height >> 1);
 
-        mipmaps.emplace_back(inputImage, pixelFormat, width, height, interpolationMode, preMultiplyAlpha);
+        mipmaps.emplace_back(image, pixelFormat, width, height, interpolationMode, preMultiplyAlpha);
       }
     }
 
@@ -38,16 +37,33 @@ namespace TexConverter
     outputTexFile.writeToFile(outputFile);
   }
 
-  void convertTexToImage(
+  void convertImageToTex(
     const std::string& inputFile,
-    const std::string& outputFile
+    const std::string& outputFile,
+    PixelFormat pixelFormat,
+    MipmapFilter interpolationMode,
+    TextureType textureType,
+    bool generateMipmaps,
+    bool preMultiplyAlpha
   ) {
+    return convertImageToTex(
+      Image::Image8{inputFile},
+      outputFile,
+      pixelFormat,
+      interpolationMode,
+      textureType,
+      generateMipmaps,
+      preMultiplyAlpha
+    );
+  }
+
+  void convertTexToImage(const std::string& inputFile, const std::string& outputFile) {
     KleiLib::TexFile tex(inputFile);
 
     auto mipmap = tex.decompress();
     BinaryReader imgReader(mipmap.data);
 
-    Image::Image8 image((int) mipmap.width, (int) mipmap.height, KleiLib::TexFile::TexChannels);
+    Image::Image8 image((int)mipmap.width, (int)mipmap.height, KleiLib::TexFile::TexChannels);
 
     for (int y = 0; y < mipmap.height; y++) {
       for (int x = 0; x < mipmap.width; x++) {
@@ -63,4 +79,4 @@ namespace TexConverter
 
     image.write(outputFile);
   }
-}
+}// namespace TexConverter
