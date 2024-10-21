@@ -80,7 +80,9 @@ namespace Image
 
     void setPixel(int x, int y, const PixelV4& pixel) const;
 
-    const ChannelT* data() { return _data; }
+    ChannelT* data() { return _data; }
+
+    const ChannelT* data() const { return _data; }
 
   private:
     [[nodiscard]] PixelV4 sample(double u, double v, InterpolationMode mode) const;
