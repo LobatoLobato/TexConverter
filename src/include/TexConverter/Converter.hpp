@@ -30,6 +30,8 @@ namespace TexConverter
     bool generateMipmaps = false, bool preMultiplyAlpha = false
   );
 
+  Image::Image8 convertTexToImage(const std::string& inputFile);
+
   void convertTexToImage(const std::string& inputFile, const std::string& outputFile);
 
 }// namespace TexConverter

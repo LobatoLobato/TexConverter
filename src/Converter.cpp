@@ -57,7 +57,7 @@ namespace TexConverter
     );
   }
 
-  void convertTexToImage(const std::string& inputFile, const std::string& outputFile) {
+  Image::Image8 convertTexToImage(const std::string& inputFile) {
     KleiLib::TexFile tex(inputFile);
 
     auto mipmap = tex.decompress();
@@ -77,6 +77,10 @@ namespace TexConverter
 
     image.flip(Image::FlipType::Vertical);
 
-    image.write(outputFile);
+    return image;
+  }
+
+  void convertTexToImage(const std::string& inputFile, const std::string& outputFile) {
+    convertTexToImage(inputFile).write(outputFile);
   }
 }// namespace TexConverter
