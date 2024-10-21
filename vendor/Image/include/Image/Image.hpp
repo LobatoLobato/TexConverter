@@ -49,11 +49,13 @@ namespace Image
           ChannelT& r = channels[0], & g = channels[1], & b = channels[2], & a = channels[3];
       };
 
-      Image() : _width(0), _height(0), _channels(0), _is_rgba(false), _data(new ChannelT[0]), _data_len(0) { }
+      Image() : _data(new ChannelT[0]), _data_len(0), _is_rgba(false) { }
 
       explicit Image(const std::string& path);
 
       Image(int width, int height, int channels);
+
+      Image(ChannelT* data, int width, int height, int channels);
 
       Image(const Image& o);
 

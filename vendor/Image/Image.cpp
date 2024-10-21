@@ -34,9 +34,7 @@ namespace Image
   Image<ChannelT>::Image(const std::string& path) {
     if constexpr (std::is_same_v<ChannelT, uint16_t>) {
       _data = stbi_load_16(path.c_str(), &_width, &_height, &_channels, 0);
-    } else {
-      _data = stbi_load(path.c_str(), &_width, &_height, &_channels, 0);
-    }
+    } else { _data = stbi_load(path.c_str(), &_width, &_height, &_channels, 0); }
 
     if (_data == nullptr) { throw std::exception(stbi_failure_reason()); }
 
@@ -45,24 +43,27 @@ namespace Image
   }
 
   template<typename ChannelT>
-  Image<ChannelT>::Image(int width, int height, int channels) : _width(width), _height(height), _channels(channels) {
+  Image<ChannelT>::Image(int width, int height, int channels)
+  : _width(width), _height(height), _channels(channels) {
     _data_len = width * height * channels;
     _data = new ChannelT[_data_len];
     _is_rgba = channels == 4;
   }
 
   template<typename ChannelT>
+  Image<ChannelT>::Image(ChannelT* data, int width, int height, int channels)
+  : _data(data), _data_len(width * height * channels), _width(width), _height(height), _channels(channels), _is_rgba(channels == 4) {}
+
+  template<typename ChannelT>
   Image<ChannelT>::Image(const Image& o)
-    : _width(o._width), _height(o._height), _channels(o._channels), _is_rgba(o._is_rgba) {
+  : _width(o._width), _height(o._height), _channels(o._channels), _is_rgba(o._is_rgba) {
     _data = new ChannelT[o._data_len];
     _data_len = o._data_len;
     std::copy(o._data, o._data + o._data_len, _data);
   }
 
   template<typename ChannelT>
-  Image<ChannelT>::~Image() {
-    stbi_image_free(_data);
-  }
+  Image<ChannelT>::~Image() { stbi_image_free(_data); }
 
   template<typename ChannelT>
   [[maybe_unused]] Image<ChannelT> Image<ChannelT>::toRGBA(bool white_to_transparent, float tolerance) const {
@@ -71,13 +72,12 @@ namespace Image
     for (int destidx = 0, srcidx = 0; destidx < rgba_image._data_len; destidx += 4, srcidx += _channels) {
       if (_channels == 3) {
         auto threshold = ChannelT(-1) - tolerance * ChannelT(-1);
-        bool is_white_pixel = _data[srcidx] >= threshold && _data[srcidx + 1] >= threshold && _data[srcidx + 2] >= threshold;
+        bool is_white_pixel = _data[srcidx] >= threshold && _data[srcidx + 1] >= threshold && _data[srcidx + 2] >=
+                              threshold;
 
         for (int ch = 0; ch < 3; ch++) { rgba_image._data[destidx + ch] = _data[srcidx + ch]; }
         rgba_image._data[destidx + 3] = white_to_transparent && is_white_pixel ? 0 : threshold;
-      } else {
-        for (int ch = 0; ch < 4; ch++) { rgba_image._data[destidx + ch] = _data[srcidx + ch]; }
-      }
+      } else { for (int ch = 0; ch < 4; ch++) { rgba_image._data[destidx + ch] = _data[srcidx + ch]; } }
     }
 
     return rgba_image;
@@ -90,8 +90,9 @@ namespace Image
     for (int destidx = 0, srcidx = 0;
          destidx < rgb_image._data_len; destidx += rgb_image._channels, srcidx += _channels) {
       for (int ch = 0; ch < rgb_image._channels; ch++) {
-        if (_channels == 4 && _data[srcidx + 3] == 0) { rgb_image._data[destidx + ch] = -1; }
-        else { rgb_image._data[destidx + ch] = _data[srcidx + ch]; }
+        if (_channels == 4 && _data[srcidx + 3] == 0) { rgb_image._data[destidx + ch] = -1; } else {
+          rgb_image._data[destidx + ch] = _data[srcidx + ch];
+        }
       }
     }
 
@@ -154,18 +155,13 @@ namespace Image
   void Image<ChannelT>::write(std::string filename) {
     std::string ext = filename.substr(filename.size() - 3);
 
-    if (ext == "bmp") {
-      stbi_write_bmp(filename.c_str(), _width, _height, _channels, _data);
-    } else if (ext == "jpg") {
+    if (ext == "bmp") { stbi_write_bmp(filename.c_str(), _width, _height, _channels, _data); } else if (ext == "jpg") {
       if (_channels == 4) {
         auto temp = this->toRGB();
         stbi_write_jpg(filename.c_str(), _width, _height, temp._channels, temp._data, 90);
-      } else {
-        stbi_write_jpg(filename.c_str(), _width, _height, _channels, _data, 90);
-      }
-    } else if (ext == "tga") {
-      stbi_write_tga(filename.c_str(), _width, _height, _channels, _data);
-    } else if (ext == "hdr") {
+      } else { stbi_write_jpg(filename.c_str(), _width, _height, _channels, _data, 90); }
+    } else if (ext == "tga") { stbi_write_tga(filename.c_str(), _width, _height, _channels, _data); } else if (
+      ext == "hdr") {
       auto temp = new float[_data_len];
       std::transform(_data, _data + _data_len, temp, [](ChannelT channel) { return channel / float(ChannelT(-1)); });
       stbi_write_hdr(filename.c_str(), _width, _height, _channels, temp);
@@ -189,7 +185,7 @@ namespace Image
       case InterpolationMode::HighQualityBicubic:
       case InterpolationMode::Bicubic: return Image::sampleBicubic(*this, denorm_x, denorm_y);
       case InterpolationMode::Invalid:
-      default:return {};
+      default: return {};
     }
   }
 
@@ -295,9 +291,7 @@ namespace Image
   }
 
   template<typename ChannelT>
-  size_t Image<ChannelT>::coordsToIndex(int x, int y) const {
-    return y * _width * _channels + x * _channels;
-  }
+  size_t Image<ChannelT>::coordsToIndex(int x, int y) const { return y * _width * _channels + x * _channels; }
 
   template<typename ChannelT>
   Image<ChannelT>::PixelV4 Image<ChannelT>::pixelAt(int x, int y) const {
@@ -306,9 +300,7 @@ namespace Image
 
   template<typename ChannelT>
   void Image<ChannelT>::setPixel(int x, int y, const PixelV4& pixel) const {
-    for (int channel = 0; channel < _channels; channel++) {
-      _data[coordsToIndex(x, y) + channel] = pixel[channel];
-    }
+    for (int channel = 0; channel < _channels; channel++) { _data[coordsToIndex(x, y) + channel] = pixel[channel]; }
   }
 
 }
